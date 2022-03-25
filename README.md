@@ -29,10 +29,28 @@
     - copy both ```isw-ec_sys.conf``` files provided (/etc/mod[...]) with same path (Arch AUR package will do it for you).
     - then reboot OR ```modprobe ec_sys write_support=1```.
 
+### Additional support for fedora.
+ - Fedora kernal does not support ec_sys directly in release kernal so follow the commands to get support for fedora
+ ```
+ # Install kernel debug version
+sudo dnf install kernel-debug kernel-debug-core kernel-debug-modules kernel-debug-modules-extra
+
+# To avoid going to tty on booting (just in case)
+sudo grubby --remove-args="3" --update-kernel=ALL
+
+# Change default kernal
+## choose the kernel with +debug in the kernal dir. 
+sudo grubby --info=ALL
+
+## use the kernal dir and use the command below
+## in my case dir = "/boot/vmlinuz-5.16.16-200.fc35.x86_64+debug"
+sudo grubby --set-default [dir]
+
 ## How to use it ?
 ### Current --help output
 ```
-usage: isw [-h] [-b B] [-c] [-f FILE] [-p P] [-r [R]] [-s S S] [-t T] [-u USB] [-w W]
+## ISW decription.
+```usage: isw [-h] [-b B] [-c] [-f FILE] [-p P] [-r [R]] [-s S S] [-t T] [-u USB] [-w W]
 
 optional arguments:
   -h, --help            show this help message and exit
