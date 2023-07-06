@@ -29,26 +29,6 @@
     - copy both ```isw-ec_sys.conf``` files provided (/etc/mod[...]) with same path (Arch AUR package will do it for you).
     - then reboot OR ```modprobe ec_sys write_support=1```.
 
-### Additional support for fedora.
- - Fedora kernal does not support ec_sys directly in release kernal so follow the commands to get support for fedora
- ```
- # Install kernel debug version
-sudo dnf install kernel-debug kernel-debug-core kernel-debug-modules kernel-debug-modules-extra
-
-# To avoid going to tty on booting (just in case)
-sudo grubby --remove-args="3" --update-kernel=ALL
-
-# Change default kernal
-## choose the kernel with +debug in the kernal dir. 
-sudo grubby --info=ALL
-
-## use the kernal dir and use the command below
-## in my case dir = "/boot/vmlinuz-5.16.16-200.fc35.x86_64+debug"
-sudo grubby --set-default [dir]
-
-## How to use it ?
-### Current --help output
-```
 ## ISW decription.
 ```usage: isw [-h] [-b B] [-c] [-f FILE] [-p P] [-r [R]] [-s S S] [-t T] [-u USB] [-w W]
 
@@ -113,11 +93,28 @@ You can launch ```isw -w [SECTION_NAME]``` at startup/resume via systemd with is
 ```
 systemctl enable isw@[SECTION_NAME].service
 ```
+## ec_sys support for kernel version greater than 5.11
+```
+sudo -i
+cd /opt
+git clone https://github.com/musikid/acpi_ec.git
+cd acpi_ec
+# Make sure your env is clean
+./uninstall.sh &>/dev/null
+apt remove -y acpi-ec 2>/dev/null
+# Perform installation
+./install.sh
+# In my case, I needed to run the keys-setup.sh
+scripts/keys-setup.sh
+reboot
 
-## TODO
+# In grub, enroll the MOK using the password you chose
+# Then, run the signing procedure
+sudo /usr/src/linux-headers-5.19.0-21-generic/scripts/sign-file sha512 /opt/scripts/mok.priv  /opt/scripts/mok.der /var/lib/dkms/acpi_ec/v1.0.2/5.19.0-21-generic/x86_64/module/acpi_ec.ko
+sudo /usr/src/linux-headers-5.19.0-21-generic/scripts/sign-file sha512 /opt/scripts/mok.priv  /opt/scripts/mok.der /usr/lib/modules/5.19.0-21-generic/updates/dkms/acpi_ec.ko
+sudo reboot
 ```
-- Daemonisation
-	- Launch at startup                            done
-	- launch after resume (hibernation/suspend)    done
-	- Launch at event(power source change)
-```
+After reboot, verify you can see the /dev/ec socket. If so, you have two options:
+    - edit the /usr/bin/isw python script to point there
+    - create symlink from the expected path to point there
+	- I'm unsure it would survive in /sys/kernel/debug after reboot, slight modification of isw systemd file could be an option
