@@ -94,7 +94,14 @@ You can launch ```isw -w [SECTION_NAME]``` at startup/resume via systemd with is
 systemctl enable isw@[SECTION_NAME].service
 ```
 ## ec_sys support for kernel version greater than 5.11
+```sh
+cd /opt
+sudo wget https://github.com/musikid/acpi_ec/releases/download/v1.0.2/acpi-ec_1.0.2_all.deb
+sudo dpkg -i acpi-ec_1.0.2_all.deb
+sudo reboot
 ```
+OR
+```sh
 sudo -i
 cd /opt
 git clone https://github.com/musikid/acpi_ec.git
@@ -115,6 +122,6 @@ sudo /usr/src/linux-headers-5.19.0-21-generic/scripts/sign-file sha512 /opt/scri
 sudo reboot
 ```
 After reboot, verify you can see the /dev/ec socket. If so, you have two options:
-    - edit the /usr/bin/isw python script to point there
+    - edit the ```/usr/bin/isw``` python script to point there
     - create symlink from the expected path to point there
-	- I'm unsure it would survive in /sys/kernel/debug after reboot, slight modification of isw systemd file could be an option
+	- I'm unsure it would survive in ```/sys/kernel/debug``` after reboot, slight modification of isw systemd file could be an option
