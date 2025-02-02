@@ -1,3 +1,0 @@
-etc
-usr/lib/systemd/system/isw@.service lib/systemd/system
-isw usr/bin
