@@ -54,7 +54,7 @@ if [ ! -f run_post ]; then
     if [ "$ec_sys_failure" -eq 1 ]; then
         current_dir=$(pwd)
         cd /opt
-        if [-d acpi_ec]; then
+        if [ -d acpi_ec ]; then
             sudo rm -rf acpi_ec
         fi
         sudo git clone https://github.com/musikid/acpi_ec.git
